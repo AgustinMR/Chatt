@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="utf-8">
         <title>Chatt</title>
@@ -7,65 +7,23 @@
         <link rel="stylesheet" href="css/site.css">
         <link rel="stylesheet" href="css/w3.css">
         <script src="js/jquery.js"></script>
+        <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
         <script src="js/semantic.min.js"></script>
         <script src="js/md5.min.js"></script>
         <script src="js/jssha256.js"></script>
     </head>
-    <script>
-        var usuario;
-        $(document).ready(function () {
-            $('.ui.sidebar')
-                    .sidebar('attach events', '.toc.item')
-                    .sidebar('setting', 'transition', 'overlay')
-                    .sidebar('setting', 'dimPage', false);
-            $('.ui.sidebar')
-                    .sidebar('setting', 'transition', 'overlay')
-                    .sidebar('setting', 'dimPage', false);
-            $('.ui.dropdown').dropdown('setting', 'allowAdditions', true);
-        });
-        window.fbAsyncInit = function () {
-            FB.init({
-                appId: '659510540840463',
-                cookie: true,
-                xfbml: true,
-                version: 'v2.8'
-            });
-            FB.AppEvents.logPageView();
-        };
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {
-                return;
-            }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-        function autenticarFacebook() {
-            FB.login(function (response) {
-                if (response.status === 'connected') {
-                    FB.api('/me', 'GET', {"fields": "id,name"}, function (user) {
-                        usuario = user.name;
-                        document.getElementById("user").innerHTML = usuario;
-                        document.getElementById("user2").innerHTML = usuario;
-                        document.getElementById("dimmer").style.display = "none";
-                    }
-                    );
-                } else {
-                }
-            }, {scope: 'public_profile'});
-        }
-    </script>
     <body>
         <div class="ui left inverted wide vertical menu sidebar w3-ria-grey">
-            <div class="w3-center w3-margin-top" id="grupos">
+            <div class="w3-center w3-margin-top">
                 <i class="user big icon circular active"></i>
                 <h3 class="ui horizontal divider w3-padding header small inverted" id="user2" style="margin-top: 5px"></h3>
+                <div id="grupos" class="ui item list">
+                    <a class="ui item header text w3-padding">s</a>
+                </div>
             </div>
         </div>
         <div class="pusher blurring w3-light-gray">
-            <div class="ui page dimmer w3-display-container" id="dimmer">
+            <div class="ui page active dimmer w3-display-container" id="dimmer">
                 <div class="bgimg-1 w3-opacity-max" style="height: 100%; width: 100%"></div>
                 <div class="ui text container w3-display-middle w3-padding-64">
                     <div class="ui grid internally celled container center aligned">
@@ -96,7 +54,6 @@
                         <h3 class="ui header text horizontal divider w3-padding w3-text-ria-green" id="grupoActual">Chatt</h3>
                     </div>
                     <div class="ui grey segment" style="height: 500px; max-height: 500px">
-
                     </div>
                     <div class="ui secondary segment">
                         <div class="ui fluid input">
@@ -124,6 +81,7 @@
                     <div class="ui green ok inverted button" onClick="agregarGrupo()"><i class="checkmark icon"></i>Confirmar</div>
                 </div>
             </div>
+            <div class="ui basic segment w3-padding-64 w3-opacity-min" style="background-image: url(img/worn-dots.png)"></div>
             <div class="ui inverted vertical footer segment w3-padding-64">
                 <div class="ui stackable container">
                     <div class="ui stackable inverted divided equal height stackable grid">
@@ -164,41 +122,103 @@
                 </div>
             </div>
             <script>
+                var usuario;
                 var pusher = new Pusher('c312df6ac515798b218a', {cluster: 'us2', encrypted: true});
-                $(document).ready(function(){
-                    var grupos = pusher.subscribe("grupos");
-                    grupos.bind('grupo-nuevo', function (data) {
+                var grupos = pusher.subscribe("grupos");
+                grupos.bind('grupo-nuevo', function (data) {
+                    var list = document.getElementById("grupos");
+                    var add = 0;
+                    $.each(list.childNodes, function (index, node) {
+                        if (node.innerHTML === data.grupo) {
+                            add++;
+                        }
+                    });
+                    if (add === 0) {
+                        var a = document.createElement("a");
+                        a.className = "ui item header text w3-padding";
+                        a.innerHTML = data.grupo;
+                        document.getElementById("grupos").appendChild(a);
+                    }
+                });
+                $(document).ready(function () {
+                    $('.ui.sidebar')
+                            .sidebar('attach events', '.toc.item')
+                            .sidebar('setting', 'transition', 'overlay')
+                            .sidebar('setting', 'dimPage', false);
+                    $('.ui.sidebar')
+                            .sidebar('setting', 'transition', 'overlay')
+                            .sidebar('setting', 'dimPage', false);
+                    $('.ui.dropdown').dropdown('setting', 'allowAdditions', true);
+                    $('#mensaje').on('keyup', function (e) {
+                        if (e.keyCode === 13) {
+                            var mensaje = document.getElementById("mensaje").value;
+                            var grupo = document.getElementById("grupoActual").innerHTML;
+                            if (grupo !== "" && grupo !== "Chatt" && mensaje !== "") {
+                                $.post("http://localhost:8080/api/mensajes", "grupo=" + grupo + "&mensaje=" + mensaje, function (response) {
+                                });
+                            }
+                        }
+                    });
+
+
+                    /*var channel = pusher.subscribe("hola");
+                     channel.bind("mensaje-nuevo", function (data) {
+                     alert(data);
+                     });*/
+                });
+                window.fbAsyncInit = function () {
+                    FB.init({
+                        appId: '659510540840463',
+                        cookie: true,
+                        xfbml: true,
+                        version: 'v2.8'
+                    });
+                    FB.AppEvents.logPageView();
+                };
+                (function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {
+                        return;
+                    }
+                    js = d.createElement(s);
+                    js.id = id;
+                    js.src = "//connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));
+                function autenticarFacebook() {
+                    FB.login(function (response) {
+                        if (response.status === 'connected') {
+                            FB.api('/me', 'GET', {"fields": "id,name"}, function (user) {
+                                usuario = user.name;
+                                document.getElementById("user").innerHTML = usuario;
+                                document.getElementById("user2").innerHTML = usuario;
+                                document.getElementById("dimmer").style.display = "none";
+                            }
+                            );
+                        } else {
+                        }
+                    }, {scope: 'public_profile'});
+                }
+
+                function suscribirseGrupo(grupo) {
+                    var channel = pusher.subscribe(grupo);
+                    channel.bind("mensaje-nuevo", function () {
                         alert();
                     });
-                });
-                function suscribirseGrupo(grupo) {
-
-                    //var channel = pusher.subscribe(grupo);
 
                 }
+
                 function agregarGrupo() {
                     var grupo = document.getElementById("grupoNuevo").value;
                     if (grupo !== "") {
                         $.post("http://localhost:8080/api/grupos", "grupo=" + grupo, function () {
                             document.getElementById("grupoActual").innerHTML = grupo;
-                            var a = document.createElement("a");
-                            a.className = "ui toc item header small";
-                            a.innerHTML = grupo;
-                            document.getElementById("grupos").appendChild(a);
+
                         });
                     }
                 }
-                $("#mensaje").on('keyup', function (e) {
-                    if (e.keyCode === 13) {
-                        var mensaje = document.getElementById("mensaje").value;
-                        var grupo = document.getElementById("grupoActual").value;
-                        if (grupo !== "" && mensaje !== "") {
-                            $.post("http://localhost:8080/api/mensajes", "grupo=" + grupo + "&mensaje=" + mensaje, function () {
 
-                            });
-                        }
-                    }
-                });
+
                 function mostrarModal() {
                     $('.ui.basic.modal').modal('show');
                 }
