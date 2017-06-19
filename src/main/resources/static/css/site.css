@@ -1,0 +1,19 @@
+.w3-ria-grey{color:#F5F5F5;background-color:#484d4d!important}
+.w3-ria-green{color:#F5F5F5!important;background-color:#53826b!important}
+.w3-border-ria-grey {border-color:#484d4d !important}
+.w3-border-ria-green {border-color:#53826b !important}
+.w3-hover-ria-grey:hover {color:#F5F5F5 !important; background-color:#484d4d !important}
+.w3-hover-ria-green:hover {color:#F5F5F5 !important; background-color:#53826b !important}
+.w3-hover-text-ria-grey:hover {color:#484d4d !important}
+.w3-hover-text-ria-green:hover {color:#53826b !important}
+.w3-hover-border-ria-grey:hover {border-color:#484d4d !important}
+.w3-hover-border-ria-green:hover {border-color:#53826b !important}
+.w3-text-ria-grey {color:#484d4d !important}
+.w3-text-ria-green {color:#53826b !important}
+
+.bgimg-1{
+	background-image: url(../img/worn-dots.png);
+}
+.bgimg-2{
+	background-image:url(../img/square_bg.png);
+}
