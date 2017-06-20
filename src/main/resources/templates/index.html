@@ -9,8 +9,7 @@
         <script src="js/jquery.js"></script>
         <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
         <script src="js/semantic.min.js"></script>
-        <script src="js/md5.min.js"></script>
-        <script src="js/jssha256.js"></script>
+        <script src="js/codebird.js"></script>
         <script type="text/javascript" src="//platform.linkedin.com/in.js">
             api_key: 772
             p2t2bf89h3a
@@ -52,9 +51,15 @@
             </div>
         </div>
         <div class="pusher blurring w3-light-gray">
+            <div class="ui icon message fixed top green w3-top w3-display-topright w3-right w3-margin w3-animate-top" style="width: 250px; height: 60px; display: none" id="info">
+                <i class="info icon w3-text-ria-green"></i>
+                <div class="content">
+                    <div class="header w3-text-ria-green" id="infomsg"></div>
+                </div>
+            </div>
             <div class="ui page active dimmer w3-display-container" id="dimmer">
                 <div class="bgimg-1 w3-opacity-max" style="height: 100%; width: 100%"></div>
-                <div class="ui text container w3-display-middle w3-padding-64">
+                <div class="ui text container w3-display-middle w3-padding-64" id="loginDimmer">
                     <div class="ui grid internally celled container center aligned">
                         <div class="ten wide column">
                             <img src="img/logo.png" style="height: 80px">
@@ -64,9 +69,19 @@
                             <button class="ui circular icon button large"><i class="ui github icon"></i></button>
                             <button class="ui circular icon button facebook large" onClick="autenticarFacebook()"><i class="ui facebook f icon"></i></button>
                             <button class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
+                            <button class="ui circular icon button twitter large" onclick="registrarTwitter()"><i class="ui twitter icon"></i></button>
                             <script type="in/Login"></script>
                         </div>
                     </div>
+                </div>
+                <div class="w3-display-middle" id="dialog" style="display: none">
+                    <h2 class="ui header text inverted">Ingrese PIN verificador entregado por Twitter:</h2>
+                    <div class="ui labeled input w3-margin">
+                        <div class="ui basic label w3-text-cerebro-red">PIN</div>
+                        <input placeholder="Ingrese aqu&iacute; el c&oacute;digo" id="codigoPin" type="text">
+                    </div><div class="ui horizontal divider"></div>
+                    <button class="ui inverted button" onclick="ocultarDimmer()">Cancelar</button>
+                    <button class="ui twitter icon button" onclick="terminarRegistroTwitter()">Registrarse <i class="ui twitter icon"></i></button>
                 </div>
             </div>
             <div class="ui secondary menu">
@@ -171,8 +186,16 @@
                             $('.ui.sidebar').sidebar('toggle');
                         });
                         document.getElementById("grupos").appendChild(a);
+                        mostrarInfo(data.grupo);
                     }
                 });
+                function mostrarInfo(grupo) {
+                    document.getElementById("infomsg").innerHTML = grupo + " agregado!";
+                    document.getElementById("info").style.display = "block";
+                    setTimeout(function () {
+                        document.getElementById("info").style.display = "none";
+                    }, 3000);
+                }
                 $(document).ready(function () {
                     document.getElementById("grupoNuevo").innerHTML = "";
                     document.getElementById("mensaje").value = "";
@@ -227,16 +250,42 @@
                         }
                     }, {scope: 'public_profile'});
                 }
-
+                var cb = new Codebird;
+                cb.setConsumerKey("OxEEPVtqXjoEs4Bgh8cqfLMOZ", "NLEuRABOR2IMojdnGm8Auh7l7mcnurfaKoXhUTCIHAEBPL5rPB");
+                function registrarTwitter() {
+                    document.getElementById("codigoPin").value = "";
+                    cb.__call(
+                            "oauth_requestToken",
+                            {oauth_callback: "oob"},
+                            function (reply, rate, err) {
+                                if (err) {
+                                    console.log("error response or timeout exceeded" + err.error);
+                                }
+                                if (reply) {
+                                    cb.setToken(reply.oauth_token, reply.oauth_token_secret);
+                                    cb.__call(
+                                            "oauth_authorize",
+                                            {},
+                                            function (auth_url) {
+                                                window.codebird_auth = window.open(auth_url);
+                                            }
+                                    );
+                                }
+                            }
+                    );
+                    document.getElementById("dimmer").style.display = "block";
+                    document.getElementById("dialog").style.display = "block";
+                    document.getElementById("loginDimmer").style.display = "none";
+                }
                 function suscribirseGrupo(grupo) {
                     pusher.unsubscribe(document.getElementById("grupoActual").innerHTML);
                     var channel = pusher.subscribe(grupo);
                     var user = document.getElementById("user").innerHTML;
                     document.getElementById("grupoActual").innerHTML = grupo;
+                    while (document.getElementById("chat").hasChildNodes()) {
+                        document.getElementById("chat").removeChild(document.getElementById("chat").lastChild);
+                    }
                     channel.bind("mensaje-nuevo", function (data) {
-                        while (document.getElementById("chat").hasChildNodes()) {
-                            document.getElementById("chat").removeChild(document.getElementById("chat").lastChild);
-                        }
                         if (data.autor !== user) {
                             var ele1 = document.createElement("div");
                             ele1.className = 'w3-row w3-margin-top w3-margin-bottom';
@@ -282,6 +331,34 @@
                         }
                     });
 
+                }
+                function terminarRegistroTwitter() {
+                    if (document.getElementById("codigoPin").value !== "") {
+                        cb.__call(
+                                "oauth_accessToken",
+                                {oauth_verifier: document.getElementById("codigoPin").value},
+                                function (reply, rate, err) {
+                                    if (err) {
+                                    }
+                                    if (reply) {
+                                        cb.setToken(reply.oauth_token, reply.oauth_token_secret);
+                                        cb.__call(
+                                                "account_verifyCredentials", {},
+                                                function (reply) {
+                                                    usuario = reply.name;
+                                                    document.getElementById("user").innerHTML = reply.name;
+                                                    document.getElementById("user2").innerHTML = reply.name;
+                                                    document.getElementById("dimmer").style.display = "none";
+                                                }
+                                        );
+                                    }
+                                }
+                        );
+                    }
+                }
+                function ocultarDimmer() {
+                    document.getElementById("dialog").style.display = "none";
+                    document.getElementById("loginDimmer").style.display = "block";
                 }
                 function agregarGrupo() {
                     var grupo = document.getElementById("grupoNuevo").value;
