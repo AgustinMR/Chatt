@@ -18,7 +18,6 @@
                 <i class="user big icon circular active"></i>
                 <h3 class="ui horizontal divider w3-padding header small inverted" id="user2" style="margin-top: 5px"></h3>
                 <div id="grupos" class="ui item list">
-                    <a class="ui item header text w3-padding">s</a>
                 </div>
             </div>
         </div>
@@ -135,17 +134,17 @@
                     });
                     if (add === 0) {
                         var a = document.createElement("a");
-                        a.className = "ui item header text w3-padding";
+                        a.className = "ui toc item header text w3-padding";
                         a.innerHTML = data.grupo;
+                        a.addEventListener("click", function(){
+                            suscribirseGrupo(data.grupo);
+                        });
                         document.getElementById("grupos").appendChild(a);
                     }
                 });
                 $(document).ready(function () {
                     $('.ui.sidebar')
                             .sidebar('attach events', '.toc.item')
-                            .sidebar('setting', 'transition', 'overlay')
-                            .sidebar('setting', 'dimPage', false);
-                    $('.ui.sidebar')
                             .sidebar('setting', 'transition', 'overlay')
                             .sidebar('setting', 'dimPage', false);
                     $('.ui.dropdown').dropdown('setting', 'allowAdditions', true);
@@ -159,12 +158,6 @@
                             }
                         }
                     });
-
-
-                    /*var channel = pusher.subscribe("hola");
-                     channel.bind("mensaje-nuevo", function (data) {
-                     alert(data);
-                     });*/
                 });
                 window.fbAsyncInit = function () {
                     FB.init({
@@ -201,24 +194,22 @@
                 }
 
                 function suscribirseGrupo(grupo) {
+                    pusher.unsubscribe(document.getElementById("grupoActual").innerHTML);
                     var channel = pusher.subscribe(grupo);
                     channel.bind("mensaje-nuevo", function () {
                         alert();
                     });
 
                 }
-
                 function agregarGrupo() {
                     var grupo = document.getElementById("grupoNuevo").value;
                     if (grupo !== "") {
                         $.post("http://localhost:8080/api/grupos", "grupo=" + grupo, function () {
                             document.getElementById("grupoActual").innerHTML = grupo;
-
+                            suscribirseGrupo(grupo);
                         });
                     }
                 }
-
-
                 function mostrarModal() {
                     $('.ui.basic.modal').modal('show');
                 }
