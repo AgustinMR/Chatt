@@ -8,6 +8,7 @@ public class Mensaje implements Serializable {
     private String grupo;
     private String contenido;
     private String hora;
+    private String autor;
 
     public Mensaje() {
     }
@@ -16,15 +17,10 @@ public class Mensaje implements Serializable {
         this.grupo = grupo;
     }
 
-    public Mensaje(String grupo, String contenido, String hora) {
+    public Mensaje(String grupo, String contenido, String autor) {
         this.grupo = grupo;
         this.contenido = contenido;
-        this.hora = hora;
-    }
-
-    public Mensaje(String grupo, String contenido) {
-        this.grupo = grupo;
-        this.contenido = contenido;
+        this.autor = autor;
         this.hora = (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) + ":" + Calendar.getInstance().get(Calendar.MINUTE));
     }
 
