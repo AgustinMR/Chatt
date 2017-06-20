@@ -82,7 +82,7 @@
                     <div class="ui segment">
                         <h3 class="ui header text horizontal divider w3-padding w3-text-ria-green" id="grupoActual">Chatt</h3>
                     </div>
-                    <div class="ui grey segment" id="chat" style="height: 500px; max-height: 500px; background-image: url(img/skulls.png)">
+                    <div class="ui grey segment" id="chat" style="height: 500px; max-height: 500px; background-image: url(img/skulls.png); overflow-y: auto">
                     </div>
                     <div class="ui secondary segment">
                         <div class="ui fluid input">
@@ -232,7 +232,11 @@
                     pusher.unsubscribe(document.getElementById("grupoActual").innerHTML);
                     var channel = pusher.subscribe(grupo);
                     var user = document.getElementById("user").innerHTML;
+                    document.getElementById("grupoActual").innerHTML = grupo;
                     channel.bind("mensaje-nuevo", function (data) {
+                        while (document.getElementById("chat").hasChildNodes()) {
+                            document.getElementById("chat").removeChild(document.getElementById("chat").lastChild);
+                        }
                         if (data.autor !== user) {
                             var ele1 = document.createElement("div");
                             ele1.className = 'w3-row w3-margin-top w3-margin-bottom';
