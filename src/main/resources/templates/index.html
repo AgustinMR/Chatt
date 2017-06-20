@@ -51,10 +51,10 @@
             </div>
         </div>
         <div class="pusher blurring w3-light-gray">
-            <div class="ui icon message fixed top green w3-top w3-display-topright w3-right w3-margin w3-animate-top" style="width: 250px; height: 60px; display: none" id="info">
-                <i class="info icon w3-text-ria-green"></i>
+            <div class="ui icon message fixed top green w3-top w3-display-topright w3-right w3-margin w3-animate-top" style="width: 290px; height: 60px; display: none" id="info">
+                <i class="info icon w3-text-ria-green left aligned w3-left" style="margin-top: -7px"></i>
                 <div class="content">
-                    <div class="header w3-text-ria-green" id="infomsg"></div>
+                    <div class="header w3-text-ria-green w3-right" id="infomsg" style="margin-top: 4px"></div>
                 </div>
             </div>
             <div class="ui page active dimmer w3-display-container" id="dimmer">
@@ -194,7 +194,7 @@
                     document.getElementById("info").style.display = "block";
                     setTimeout(function () {
                         document.getElementById("info").style.display = "none";
-                    }, 3000);
+                    }, 5000);
                 }
                 $(document).ready(function () {
                     document.getElementById("grupoNuevo").innerHTML = "";
