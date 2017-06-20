@@ -73,10 +73,11 @@
                             <h1 class="ui inverted header">Mensajeria en tiempo real</h1>
                             <h3 class="ui inverted header horizontal divider w3-padding">Inicia con redes sociales</h3>
                             <button class="ui circular icon button facebook large" onClick="autenticarFacebook()"><i class="ui facebook f icon"></i></button>
-                            <button onclick="autenticarGoogle()" class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
-                            <div class="g-signin2" data-onsuccess="onSignIn" id="goo" style="display:none"></div>
                             <button class="ui circular icon button twitter large" onclick="registrarTwitter()"><i class="ui twitter icon"></i></button>
                             <button onclick="liAuth()" class="ui circular icon button linkedin large"><i class="ui linkedin icon"></i></button>
+                            <div class="w3-row center aligned w3-center">
+                                <div class="g-signin2" data-onsuccess="onSignIn" id="goo"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -177,10 +178,9 @@
                 }
                 function onSignIn(googleUser) {
                     var profile = googleUser.getBasicProfile();
-                    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-                    console.log('Name: ' + profile.getName());
-                    console.log('Image URL: ' + profile.getImageUrl());
-                    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+                    document.getElementById("user").innerHTML = profile.getName();
+                    document.getElementById("user2").innerHTML = profile.getName();
+                    document.getElementById("dimmer").style.display = "none";
                 }
                 var usuario;
                 var pusher = new Pusher('c312df6ac515798b218a', {cluster: 'us2', encrypted: true});
