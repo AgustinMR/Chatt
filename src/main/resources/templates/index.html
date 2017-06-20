@@ -9,15 +9,17 @@
         <script src="js/jquery.js"></script>
         <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
         <script src="js/semantic.min.js"></script>
-        <script src="js/md5.min.js"></script>
-        <script src="js/jssha256.js"></script>
+        <script src="js/codebird.js"></script>
         <script type="text/javascript" src="//platform.linkedin.com/in.js">
             api_key: 772p2t2bf89h3a
             onLoad: onLinkedInLoad
         </script>
-        
-        <script type="text/javascript">
 
+        <script type="text/javascript">
+            function liAuth(){
+            IN.User.authorize(function(){
+            });
+            }
             // Setup an event listener to make an API call once auth is complete
             function onLinkedInLoad() {
                 IN.Event.on(IN, "auth", getProfileData);
@@ -25,7 +27,12 @@
 
             // Handle the successful return from the API call
             function onSuccess(data) {
-                console.log(data);
+                    
+                    var json = JSON.parse(data);
+                   // alert(json["name"]); //mkyong
+                    //alert(json.name); //mkyong
+                    //console.log(data);
+                    // innerhtml cagar firsName
             }
 
             // Handle an error response from the API call
@@ -39,7 +46,7 @@
             }
 
         </script>
-        
+
     </head>
     <body>
         <div class="ui left inverted wide vertical menu sidebar w3-ria-grey">
@@ -51,21 +58,36 @@
             </div>
         </div>
         <div class="pusher blurring w3-light-gray">
+            <div class="ui icon message fixed top green w3-top w3-display-topright w3-right w3-margin w3-animate-top" style="width: 290px; height: 60px; display: none" id="info">
+                <i class="info icon w3-text-ria-green left aligned w3-left" style="margin-top: -7px"></i>
+                <div class="content">
+                    <div class="header w3-text-ria-green w3-right" id="infomsg" style="margin-top: 4px"></div>
+                </div>
+            </div>
             <div class="ui page active dimmer w3-display-container" id="dimmer">
                 <div class="bgimg-1 w3-opacity-max" style="height: 100%; width: 100%"></div>
-                <div class="ui text container w3-display-middle w3-padding-64">
+                <div class="ui text container w3-display-middle w3-padding-64" id="loginDimmer">
                     <div class="ui grid internally celled container center aligned">
                         <div class="ten wide column">
                             <img src="img/logo.png" style="height: 80px">
                             <h1 class="ui inverted header w3-xxxlarge">chatt</h1>
                             <h1 class="ui inverted header">Mensajeria en tiempo real</h1>
                             <h3 class="ui inverted header horizontal divider w3-padding">Inicia con redes sociales</h3>
-                            <button class="ui circular icon button large"><i class="ui github icon"></i></button>
+                            <button onclick="liAuth()" class="ui circular icon button linkedin large"><i class="ui linkedin icon"></i></button>
                             <button class="ui circular icon button facebook large" onClick="autenticarFacebook()"><i class="ui facebook f icon"></i></button>
                             <button class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
-                            <script type="in/Login"></script>
+                            <button class="ui circular icon button twitter large" onclick="registrarTwitter()"><i class="ui twitter icon"></i></button>
                         </div>
                     </div>
+                </div>
+                <div class="w3-display-middle" id="dialog" style="display: none">
+                    <h2 class="ui header text inverted">Ingrese PIN verificador entregado por Twitter:</h2>
+                    <div class="ui labeled input w3-margin">
+                        <div class="ui basic label w3-text-cerebro-red">PIN</div>
+                        <input placeholder="Ingrese aqu&iacute; el c&oacute;digo" id="codigoPin" type="text">
+                    </div><div class="ui horizontal divider"></div>
+                    <button class="ui inverted button" onclick="ocultarDimmer()">Cancelar</button>
+                    <button class="ui twitter icon button" onclick="terminarRegistroTwitter()">Registrarse <i class="ui twitter icon"></i></button>
                 </div>
             </div>
             <div class="ui secondary menu">
@@ -81,7 +103,7 @@
                     <div class="ui segment">
                         <h3 class="ui header text horizontal divider w3-padding w3-text-ria-green" id="grupoActual">Chatt</h3>
                     </div>
-                    <div class="ui grey segment" style="height: 500px; max-height: 500px; background-image: url(img/skulls.png)">
+                    <div class="ui grey segment" id="chat" style="height: 500px; max-height: 500px; background-image: url(img/skulls.png); overflow-y: auto">
                     </div>
                     <div class="ui secondary segment">
                         <div class="ui fluid input">
@@ -109,7 +131,7 @@
                     <div class="ui green ok inverted button" onClick="agregarGrupo()"><i class="checkmark icon"></i>Confirmar</div>
                 </div>
             </div>
-            <div class="ui basic segment w3-padding-64 w3-opacity-min" style="background-image: url(img/worn-dots.png)"></div>
+            <div class="ui basic segment w3-opacity-min" style="background-image: url(img/worn-dots.png); height: 200px; margin-bottom: 0px; border-color: #53826b; border-bottom-style: solid; border-width: 7px"></div>
             <div class="ui inverted vertical footer segment w3-padding-64">
                 <div class="ui stackable container">
                     <div class="ui stackable inverted divided equal height stackable grid">
@@ -165,14 +187,24 @@
                         var a = document.createElement("a");
                         a.className = "ui toc item header text w3-padding";
                         a.innerHTML = data.grupo;
-                        a.addEventListener("click", function(){
+                        a.addEventListener("click", function () {
                             suscribirseGrupo(data.grupo);
                             $('.ui.sidebar').sidebar('toggle');
                         });
                         document.getElementById("grupos").appendChild(a);
+                        mostrarInfo(data.grupo);
                     }
                 });
+                function mostrarInfo(grupo) {
+                    document.getElementById("infomsg").innerHTML = grupo + " agregado!";
+                    document.getElementById("info").style.display = "block";
+                    setTimeout(function () {
+                        document.getElementById("info").style.display = "none";
+                    }, 5000);
+                }
                 $(document).ready(function () {
+                    document.getElementById("grupoNuevo").innerHTML = "";
+                    document.getElementById("mensaje").value = "";
                     $('.ui.sidebar')
                             .sidebar('attach events', '.toc.item')
                             .sidebar('setting', 'transition', 'overlay')
@@ -182,8 +214,10 @@
                         if (e.keyCode === 13) {
                             var mensaje = document.getElementById("mensaje").value;
                             var grupo = document.getElementById("grupoActual").innerHTML;
-                            if (grupo !== "" && grupo !== "Chatt" && mensaje !== "") {
-                                $.post("http://localhost:8080/api/mensajes", "grupo=" + grupo + "&mensaje=" + mensaje, function (response) {
+                            var user = document.getElementById("user").innerHTML;
+                            if (grupo !== "" && grupo !== "Chatt" && mensaje !== "" && user !== "") {
+                                $.post("http://localhost:8080/api/mensajes", "grupo=" + grupo + "&mensaje=" + mensaje + "&autor=" + user, function (response) {
+                                    document.getElementById("mensaje").value = "";
                                 });
                             }
                         }
@@ -222,14 +256,115 @@
                         }
                     }, {scope: 'public_profile'});
                 }
-
+                var cb = new Codebird;
+                cb.setConsumerKey("OxEEPVtqXjoEs4Bgh8cqfLMOZ", "NLEuRABOR2IMojdnGm8Auh7l7mcnurfaKoXhUTCIHAEBPL5rPB");
+                function registrarTwitter() {
+                    document.getElementById("codigoPin").value = "";
+                    cb.__call(
+                            "oauth_requestToken",
+                            {oauth_callback: "oob"},
+                            function (reply, rate, err) {
+                                if (err) {
+                                    console.log("error response or timeout exceeded" + err.error);
+                                }
+                                if (reply) {
+                                    cb.setToken(reply.oauth_token, reply.oauth_token_secret);
+                                    cb.__call(
+                                            "oauth_authorize",
+                                            {},
+                                            function (auth_url) {
+                                                window.codebird_auth = window.open(auth_url);
+                                            }
+                                    );
+                                }
+                            }
+                    );
+                    document.getElementById("dimmer").style.display = "block";
+                    document.getElementById("dialog").style.display = "block";
+                    document.getElementById("loginDimmer").style.display = "none";
+                }
                 function suscribirseGrupo(grupo) {
                     pusher.unsubscribe(document.getElementById("grupoActual").innerHTML);
                     var channel = pusher.subscribe(grupo);
-                    channel.bind("mensaje-nuevo", function () {
-                        alert();
+                    var user = document.getElementById("user").innerHTML;
+                    document.getElementById("grupoActual").innerHTML = grupo;
+                    while (document.getElementById("chat").hasChildNodes()) {
+                        document.getElementById("chat").removeChild(document.getElementById("chat").lastChild);
+                    }
+                    channel.bind("mensaje-nuevo", function (data) {
+                        if (data.autor !== user) {
+                            var ele1 = document.createElement("div");
+                            ele1.className = 'w3-row w3-margin-top w3-margin-bottom';
+                            var ele2 = document.createElement("div");
+                            ele2.className = 'w3-third w3-white w3-round w3-card';
+                            ele1.appendChild(ele2);
+                            var ele3 = document.createElement("div");
+                            ele3.className = 'w3-row w3-small w3-margin-left';
+                            var span1 = document.createElement("span");
+                            span1.className = "w3-text-ria-green";
+                            span1.innerHTML = data.autor;
+                            ele3.appendChild(span1);
+                            var span2 = document.createElement("span");
+                            span2.className = "w3-right w3-margin-right w3-text-grey";
+                            span2.innerHTML = data.hora;
+                            ele3.appendChild(span2);
+                            ele2.appendChild(ele3);
+                            var ele4 = document.createElement("div");
+                            ele4.style.marginBottom = '3px';
+                            ele4.className = 'w3-row w3-text-dark-gray w3-margin-left w3-margin-right';
+                            ele4.textContent = data.contenido;
+                            ele2.appendChild(ele4);
+                            document.getElementById("chat").appendChild(ele1);
+                        } else {
+                            var ele1 = document.createElement("div");
+                            ele1.className = 'w3-row w3-margin-top w3-margin-bottom';
+                            var ele2 = document.createElement("div");
+                            ele2.className = 'w3-third w3-right w3-pale-green w3-round w3-card';
+                            ele1.appendChild(ele2);
+                            var ele3 = document.createElement("div");
+                            ele3.className = 'w3-row w3-small w3-margin-left';
+                            var span2 = document.createElement("span");
+                            span2.className = "w3-right w3-margin-right w3-text-grey";
+                            span2.innerHTML = data.hora;
+                            ele3.appendChild(span2);
+                            ele2.appendChild(ele3);
+                            var ele4 = document.createElement("div");
+                            ele4.style.marginBottom = '3px';
+                            ele4.className = 'w3-row w3-text-dark-gray w3-margin-left w3-margin-right';
+                            ele4.textContent = data.contenido;
+                            ele2.appendChild(ele4);
+                            document.getElementById("chat").appendChild(ele1);
+                        }
                     });
 
+                }
+                function terminarRegistroTwitter() {
+                    if (document.getElementById("codigoPin").value !== "") {
+                        cb.__call(
+                                "oauth_accessToken",
+                                {oauth_verifier: document.getElementById("codigoPin").value},
+                                function (reply, rate, err) {
+                                    if (err) {
+                                    }
+                                    if (reply) {
+                                        cb.setToken(reply.oauth_token, reply.oauth_token_secret);
+                                        cb.__call(
+                                                "account_verifyCredentials", {},
+                                                function (reply) {
+                                                    usuario = reply.name;
+                                                    document.getElementById("user").innerHTML = reply.name;
+                                                    document.getElementById("user2").innerHTML = reply.name;
+                                                    document.getElementById("dimmer").style.display = "none";
+                                                }
+                                        );
+                                    }
+                                }
+                        );
+                    }
+                }
+                function ocultarDimmer() {
+                    document.getElementById("dialog").style.display = "none";
+                    document.getElementById("loginDimmer").style.display = "block";
                 }
                 function agregarGrupo() {
                     var grupo = document.getElementById("grupoNuevo").value;
@@ -237,6 +372,7 @@
                         $.post("http://localhost:8080/api/grupos", "grupo=" + grupo, function () {
                             document.getElementById("grupoActual").innerHTML = grupo;
                             suscribirseGrupo(grupo);
+                            document.getElementById("grupoNuevo").value = "";
                         });
                     }
                 }
@@ -244,9 +380,9 @@
                     $('.ui.basic.modal').modal('show');
                 }
             </script>
-            
-           
-            
+
+
+
         </div>
     </body>
 </html>
