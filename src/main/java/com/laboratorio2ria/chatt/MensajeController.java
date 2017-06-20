@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class MensajeController {
     
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public void publicarMensaje(@RequestParam(name = "grupo") String grupo, @RequestParam(name = "mensaje") String mensaje){
+    public void publicarMensaje(@RequestParam(name = "grupo") String grupo, @RequestParam(name = "mensaje") String mensaje, @RequestParam(name = "autor") String autor){
         Pusher pusher = new Pusher("354776", "c312df6ac515798b218a", "c0dc04df9013d9d70ccf");
         pusher.setCluster("us2");
         pusher.setEncrypted(true);
-        pusher.trigger(grupo, "mensaje-nuevo", new Mensaje(grupo, mensaje));
+        pusher.trigger(grupo, "mensaje-nuevo", new Mensaje(grupo, mensaje, autor));
     }
 }

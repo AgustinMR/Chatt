@@ -81,7 +81,7 @@
                     <div class="ui segment">
                         <h3 class="ui header text horizontal divider w3-padding w3-text-ria-green" id="grupoActual">Chatt</h3>
                     </div>
-                    <div class="ui grey segment" style="height: 500px; max-height: 500px">
+                    <div class="ui grey segment" style="height: 500px; max-height: 500px; background-image: url(img/skulls.png)">
                     </div>
                     <div class="ui secondary segment">
                         <div class="ui fluid input">
@@ -167,6 +167,7 @@
                         a.innerHTML = data.grupo;
                         a.addEventListener("click", function(){
                             suscribirseGrupo(data.grupo);
+                            $('.ui.sidebar').sidebar('toggle');
                         });
                         document.getElementById("grupos").appendChild(a);
                     }
