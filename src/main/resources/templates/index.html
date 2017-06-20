@@ -6,18 +6,22 @@
         <link rel="stylesheet" href="css/semantic.min.css">
         <link rel="stylesheet" href="css/site.css">
         <link rel="stylesheet" href="css/w3.css">
+        <meta name="google-signin-client_id" content="831859513416-2ie94vtld9i0a34bjc3pgsric6ecejk0.apps.googleusercontent.com">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
         <script src="js/jquery.js"></script>
         <script src="https://js.pusher.com/4.0/pusher.min.js"></script>
         <script src="js/semantic.min.js"></script>
         <script src="js/codebird.js"></script>
         <script type="text/javascript" src="//platform.linkedin.com/in.js">
-            api_key: 772
-            p2t2bf89h3a
+            api_key: 772p2t2bf89h3a
             onLoad: onLinkedInLoad
         </script>
 
         <script type="text/javascript">
-
+            function liAuth(){
+                IN.User.authorize(function(){
+            });
+            }
             // Setup an event listener to make an API call once auth is complete
             function onLinkedInLoad() {
                 IN.Event.on(IN, "auth", getProfileData);
@@ -25,7 +29,9 @@
 
             // Handle the successful return from the API call
             function onSuccess(data) {
-                console.log(data);
+                    document.getElementById("user").innerHTML = data.firstName + " " + data.lastName;
+                    document.getElementById("user2").innerHTML = data.firstName + " " + data.lastName;
+                    document.getElementById("dimmer").style.display = "none";
             }
 
             // Handle an error response from the API call
@@ -66,11 +72,11 @@
                             <h1 class="ui inverted header w3-xxxlarge">chatt</h1>
                             <h1 class="ui inverted header">Mensajeria en tiempo real</h1>
                             <h3 class="ui inverted header horizontal divider w3-padding">Inicia con redes sociales</h3>
-                            <button class="ui circular icon button large"><i class="ui github icon"></i></button>
                             <button class="ui circular icon button facebook large" onClick="autenticarFacebook()"><i class="ui facebook f icon"></i></button>
-                            <button class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
+                            <button onclick="autenticarGoogle()" class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
+                            <div class="g-signin2" data-onsuccess="onSignIn" id="goo" style="display:none"></div>
                             <button class="ui circular icon button twitter large" onclick="registrarTwitter()"><i class="ui twitter icon"></i></button>
-                            <script type="in/Login"></script>
+                            <button onclick="liAuth()" class="ui circular icon button linkedin large"><i class="ui linkedin icon"></i></button>
                         </div>
                     </div>
                 </div>
@@ -166,6 +172,16 @@
                 </div>
             </div>
             <script>
+                function autenticarGoogle(){
+                    onSignIn();
+                }
+                function onSignIn(googleUser) {
+                    var profile = googleUser.getBasicProfile();
+                    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                    console.log('Name: ' + profile.getName());
+                    console.log('Image URL: ' + profile.getImageUrl());
+                    console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+                }
                 var usuario;
                 var pusher = new Pusher('c312df6ac515798b218a', {cluster: 'us2', encrypted: true});
                 var grupos = pusher.subscribe("grupos");
