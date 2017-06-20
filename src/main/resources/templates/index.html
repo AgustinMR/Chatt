@@ -11,6 +11,35 @@
         <script src="js/semantic.min.js"></script>
         <script src="js/md5.min.js"></script>
         <script src="js/jssha256.js"></script>
+        <script type="text/javascript" src="//platform.linkedin.com/in.js">
+            api_key: 772p2t2bf89h3a
+            onLoad: onLinkedInLoad
+        </script>
+        
+        <script type="text/javascript">
+
+            // Setup an event listener to make an API call once auth is complete
+            function onLinkedInLoad() {
+                IN.Event.on(IN, "auth", getProfileData);
+            }
+
+            // Handle the successful return from the API call
+            function onSuccess(data) {
+                console.log(data);
+            }
+
+            // Handle an error response from the API call
+            function onError(error) {
+                console.log(error);
+            }
+
+            // Use the API call wrapper to request the member's basic profile data
+            function getProfileData() {
+                IN.API.Raw("/people/~").result(onSuccess).error(onError);
+            }
+
+        </script>
+        
     </head>
     <body>
         <div class="ui left inverted wide vertical menu sidebar w3-ria-grey">
@@ -34,7 +63,7 @@
                             <button class="ui circular icon button large"><i class="ui github icon"></i></button>
                             <button class="ui circular icon button facebook large" onClick="autenticarFacebook()"><i class="ui facebook f icon"></i></button>
                             <button class="ui circular icon button google plus large"><i class="ui google icon"></i></button>
-                            <button class="ui circular icon button linkedin large"><i class="ui linkedin icon"></i></button>
+                            <script type="in/Login"></script>
                         </div>
                     </div>
                 </div>
@@ -214,6 +243,9 @@
                     $('.ui.basic.modal').modal('show');
                 }
             </script>
+            
+           
+            
         </div>
     </body>
 </html>
